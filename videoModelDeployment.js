@@ -1,35 +1,25 @@
-let videos = [
-  "./videos/squat_12.mp4",
-  "./videos/squat_17.mp4",
-  // "./videos/rounded_back/1003_squat_000148.mp4",
-  // "./videos/rounded_back/1003_squat_000149.mp4",
-  // "./videos/rounded_back/1003_squat_000150.mp4",
-  // "./videos/rounded_back/1003_squat_000151.mp4",
-  // "./videos/rounded_back/1003_squat_000152.mp4",
-  // "./videos/rounded_back/1003_squat_000153.mp4",
-  // "./videos/rounded_back/1003_squat_000154.mp4",
-  // "./videos/rounded_back/1003_squat_000155.mp4",
-];
-let currentVideo = 0;
-
 let video;
-let video_variables = {};
-
-let state = "collecting";
 let posenet;
+
 let singlePose, skeleton;
+let state = "collecting";
+
+let video_variables = {};
 let brain;
-let dataTarget = "correct";
+
+let poseLabel = "rounded_back";
 
 function preload() {
   console.log("PRELOADING....");
-  video = createVideo(videos[currentVideo], onVideoLoad);
+  video = createVideo("./videos/testing_videos/0928_squat_000007.mp4", onVideoLoad);
   video.hide();
   video.elt.addEventListener("loadeddata", startVideoPlayback);
 }
 
 function onVideoLoad() {
   console.log("Video metadata loaded.");
+  console.log("Video width: " + video.width);
+  console.log("Video height: " + video.height);
 
   video_variables["new_width"] = video.width * (720 / video.height);
   video_variables["new_height"] = 720;
@@ -37,43 +27,28 @@ function onVideoLoad() {
   video_variables["x_ratio"] = video_variables["new_width"] / video.width;
   video_variables["y_ratio"] = video_variables["new_height"] / video.height;
 
+  posenet = ml5.poseNet(video, modelLoaded);
+  posenet.on("pose", receivedPoses);
+
+  // video.play();
+
   // // Play the video
   if (video_variables["video_loaded"]) {
     console.log("VIDEO PLAYING");
-    video.play();
+    video.loop();
   } else {
     console.log("wait");
   }
 
   video.onended(function () {
-    // brain.saveData();
-    console.log(`VIDEO no:${currentVideo} ENDED`);
-    currentVideo++;
-
-    video.pause(); // Pause the video before removing it
-    video.parent().removeChild(video.elt); // Remove the video element from its parent node
-
-    if (currentVideo >= videos.length) {
-      console.log("ALL VIDEOS ENDED....");
-      console.log("EXPORTING DATA....");
-      brain.saveData();
-    } else {
-      console.log("preload again");
-      preload();
-    }
+    // video.play();
+    console.log("VIDEO ENDED");
   });
 }
 
 function startVideoPlayback() {
   console.log("Video data loaded.");
   video_variables["video_loaded"] = true;
-
-  if (posenet) {
-    posenet.removeAllListeners(); // Remove all existing event listeners
-  }
-
-  posenet = ml5.poseNet(video, modelLoaded);
-  posenet.on("pose", receivedPoses);
 }
 
 function setup() {
@@ -87,34 +62,58 @@ function setup() {
     debug: true,
   };
   brain = ml5.neuralNetwork(options);
+  const modelInfo = {
+    model: "model/model.json",
+    metadata: "model/model_meta.json",
+    weights: "model/model.weights.bin",
+  };
+  brain.load(modelInfo, brainLoaded);
+}
+
+function brainLoaded() {
+  console.log("pose classification ready!");
+  classifyPose();
+}
+
+function classifyPose() {
+  if (singlePose) {
+    let inputs = [];
+    for (let i = 0; i < singlePose.keypoints.length; i++) {
+      let x = singlePose.keypoints[i].position.x;
+      let y = singlePose.keypoints[i].position.y;
+      inputs.push(x);
+      inputs.push(y);
+    }
+    brain.classify(inputs, gotResult);
+  } else {
+    setTimeout(classifyPose, 100);
+  }
+}
+
+function gotResult(error, results) {
+  if (results[0].confidence > 0.75) {
+    poseLabel = results[0].label.toUpperCase();
+  }
+  console.log(results[0].confidence, results[0].label);
+  classifyPose();
 }
 
 function receivedPoses(poses) {
-  // console.log(poses);
   if (poses.length > 0) {
     singlePose = poses[0].pose;
     skeleton = poses[0].skeleton;
-    if (state == "collecting") {
-      let inputs = [];
-      for (let i = 0; i < singlePose.keypoints.length; i++) {
-        let x = singlePose.keypoints[i].position.x;
-        let y = singlePose.keypoints[i].position.y;
-        inputs.push(x);
-        inputs.push(y);
-      }
-      let target = [dataTarget];
-      brain.addData(inputs, target);
-    }
   }
 }
 
 function modelLoaded() {
-  console.log("Model has loaded");
+  console.log("poseNet ready");
 }
 
 function draw() {
-  // Resize the video to fit a specific height while maintaining its aspect ratio
-
+  push();
+  // translate(video.width, 0);
+  // scale(-1, 1);
+  // image(video, 0, 0, video.width, video.height);
   background(255, 0, 0);
   image(
     video,
@@ -125,6 +124,23 @@ function draw() {
   );
 
   fill(255, 0, 0);
+  // if (singlePose) {
+  //   for (let i = 0; i < skeleton.length; i++) {
+  //     let a = skeleton[i][0];
+  //     let b = skeleton[i][1];
+  //     strokeWeight(2);
+  //     stroke(0);
+
+  //     line(a.position.x, a.position.y, b.position.x, b.position.y);
+  //   }
+  //   for (let i = 0; i < singlePose.keypoints.length; i++) {
+  //     let x = singlePose.keypoints[i].position.x;
+  //     let y = singlePose.keypoints[i].position.y;
+  //     fill(0);
+  //     stroke(255);
+  //     ellipse(x, y, 16, 16);
+  //   }
+  // }
 
   if (singlePose) {
     // console.log(singlePose, skeleton, "pose ");
@@ -174,6 +190,13 @@ function draw() {
     //image(specs,singlePose.nose.x-35,singlePose.nose.y-50,80,80);
     //image(smoke,singlePose.nose.x-35,singlePose.nose.y+10,40,40);
   }
+  pop();
+
+  fill(255, 0, 255);
+  noStroke();
+  textSize(50);
+  textAlign(CENTER, CENTER);
+  text(poseLabel, width / 2, height / 2);
 }
 
 function calcAngle(x1, y1, x2, y2, x3, y3) {
