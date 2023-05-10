@@ -6,7 +6,8 @@ let video_variables = {};
 let brain;
 
 function preload() {
-  video = createVideo("./videos/New folder/1003_squat_000152.mp4", onVideoLoad);
+  console.log("PRELOADING....");
+  video = createVideo("./videos/rounded_back/1003_squat_000152.mp4", onVideoLoad);
   video.hide();
   video.elt.addEventListener("loadeddata", startVideoPlayback);
 }
