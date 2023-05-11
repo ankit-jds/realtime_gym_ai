@@ -1,15 +1,18 @@
 let videos = [
-  "./videos/squat_12.mp4",
-  "./videos/squat_17.mp4",
-  // "./videos/rounded_back/1003_squat_000148.mp4",
-  // "./videos/rounded_back/1003_squat_000149.mp4",
-  // "./videos/rounded_back/1003_squat_000150.mp4",
-  // "./videos/rounded_back/1003_squat_000151.mp4",
-  // "./videos/rounded_back/1003_squat_000152.mp4",
-  // "./videos/rounded_back/1003_squat_000153.mp4",
-  // "./videos/rounded_back/1003_squat_000154.mp4",
-  // "./videos/rounded_back/1003_squat_000155.mp4",
+  // "./videos/inner_thigh/1031_squat_000040.mp4",
+  // "./videos/inner_thigh/1031_squat_000041.mp4",
+  // "./videos/inner_thigh/1031_squat_000043.mp4",
+  // "./videos/inner_thigh/1031_squat_000044.mp4",
+  // "./videos/inner_thigh/1031_squat_000045.mp4",
+  // "./videos/inner_thigh/1031_squat_000047.mp4",
+  // "./videos/inner_thigh/1031_squat_000141.mp4",
+  "./videos/inner_thigh/1031_squat_000142.mp4",
+  "./videos/inner_thigh/1031_squat_000143.mp4",
+  "./videos/inner_thigh/1031_squat_000145.mp4",
+  "./videos/inner_thigh/1031_squat_000146.mp4",
+  "./videos/inner_thigh/1031_squat_000147.mp4",
 ];
+
 let currentVideo = 0;
 
 let video;
@@ -22,14 +25,14 @@ let brain;
 let dataTarget = "correct";
 
 function preload() {
-  console.log("PRELOADING....");
+  // console.log("PRELOADING....");
   video = createVideo(videos[currentVideo], onVideoLoad);
   video.hide();
   video.elt.addEventListener("loadeddata", startVideoPlayback);
 }
 
 function onVideoLoad() {
-  console.log("Video metadata loaded.");
+  // console.log("Video metadata loaded.");
 
   video_variables["new_width"] = video.width * (720 / video.height);
   video_variables["new_height"] = 720;
@@ -39,7 +42,7 @@ function onVideoLoad() {
 
   // // Play the video
   if (video_variables["video_loaded"]) {
-    console.log("VIDEO PLAYING");
+    console.log(`VIDEO no:${currentVideo} PLAYING`);
     video.play();
   } else {
     console.log("wait");
@@ -58,14 +61,14 @@ function onVideoLoad() {
       console.log("EXPORTING DATA....");
       brain.saveData();
     } else {
-      console.log("preload again");
+      // console.log("preload again");
       preload();
     }
   });
 }
 
 function startVideoPlayback() {
-  console.log("Video data loaded.");
+  // console.log("Video data loaded.");
   video_variables["video_loaded"] = true;
 
   if (posenet) {
@@ -82,7 +85,7 @@ function setup() {
 
   let options = {
     inputs: 34,
-    outputs: 4,
+    outputs: 2,
     task: "classification",
     debug: true,
   };
@@ -109,7 +112,7 @@ function receivedPoses(poses) {
 }
 
 function modelLoaded() {
-  console.log("Model has loaded");
+  // console.log("Model has loaded");
 }
 
 function draw() {

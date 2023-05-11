@@ -1,21 +1,26 @@
 let video;
-let poseNet;
-let pose;
-let skeleton;
+let posenet;
+
+let singlePose, skeleton;
+let state = "collecting";
 
 let brain;
+
 let poseLabel = "rounded_back";
 
 function setup() {
-  createCanvas(640, 480);
+  console.log("SETUP STARTED");
+  createCanvas(1280, 720);
+
   video = createCapture(VIDEO);
   video.hide();
+
   poseNet = ml5.poseNet(video, modelLoaded);
-  poseNet.on("pose", gotPoses);
+  poseNet.on("pose", receivedPoses);
 
   let options = {
     inputs: 34,
-    outputs: 4,
+    outputs: 2,
     task: "classification",
     debug: true,
   };
@@ -34,31 +39,31 @@ function brainLoaded() {
 }
 
 function classifyPose() {
-  if (pose) {
+  if (singlePose) {
     let inputs = [];
-    for (let i = 0; i < pose.keypoints.length; i++) {
-      let x = pose.keypoints[i].position.x;
-      let y = pose.keypoints[i].position.y;
+    for (let i = 0; i < singlePose.keypoints.length; i++) {
+      let x = singlePose.keypoints[i].position.x;
+      let y = singlePose.keypoints[i].position.y;
       inputs.push(x);
       inputs.push(y);
     }
     brain.classify(inputs, gotResult);
   } else {
-    setTimeout(classifyPose, 100);
+    setTimeout(classifyPose, 50);
   }
 }
 
 function gotResult(error, results) {
   if (results[0].confidence > 0.75) {
     poseLabel = results[0].label.toUpperCase();
+    // console.log(results[0].confidence, results[0].label);
   }
-  console.log(results[0].confidence, results[0].label);
   classifyPose();
 }
 
-function gotPoses(poses) {
+function receivedPoses(poses) {
   if (poses.length > 0) {
-    pose = poses[0].pose;
+    singlePose = poses[0].pose;
     skeleton = poses[0].skeleton;
   }
 }
@@ -68,33 +73,67 @@ function modelLoaded() {
 }
 
 function draw() {
-  push();
-  translate(video.width, 0);
-  scale(-1, 1);
-  image(video, 0, 0, video.width, video.height);
+  // push();
+  // translate(video.width, 0);
+  // scale(-1, 1);
+  // image(video, 0, 0, video.width, video.height);
+  background(255, 0, 0);
+  image(video, 0, 0);
 
-  if (pose) {
-    for (let i = 0; i < skeleton.length; i++) {
-      let a = skeleton[i][0];
-      let b = skeleton[i][1];
-      strokeWeight(2);
-      stroke(0);
+  fill(255, 0, 0);
 
-      line(a.position.x, a.position.y, b.position.x, b.position.y);
+  // if (singlePose) {
+  //   for (let i = 0; i < skeleton.length; i++) {
+  //     let a = skeleton[i][0];
+  //     let b = skeleton[i][1];
+  //     strokeWeight(2);
+  //     stroke(0);
+
+  //     line(a.position.x, a.position.y, b.position.x, b.position.y);
+  //   }
+  //   for (let i = 0; i < singlePose.keypoints.length; i++) {
+  //     let x = singlePose.keypoints[i].position.x;
+  //     let y = singlePose.keypoints[i].position.y;
+  //     fill(0);
+  //     stroke(255);
+  //     ellipse(x, y, 16, 16);
+  //   }
+
+  if (singlePose) {
+    // console.log(singlePose, skeleton, "pose ");
+    for (let i = 0; i < singlePose.keypoints.length; i++) {
+      if (singlePose.keypoints[i].score > 0.6) {
+        ellipse(
+          singlePose.keypoints[i].position.x,
+          singlePose.keypoints[i].position.y,
+          10
+        );
+      }
     }
-    for (let i = 0; i < pose.keypoints.length; i++) {
-      let x = pose.keypoints[i].position.x;
-      let y = pose.keypoints[i].position.y;
-      fill(0);
-      stroke(255);
-      ellipse(x, y, 16, 16);
+
+    if (poseLabel == "CORRECT") {
+
+      stroke(0, 255, 0);
+      strokeWeight(5);
+    } else {
+      // console.log(poseLabel);
+      stroke(255, 255, 255);
+      strokeWeight(5);
+    }
+
+    for (let j = 0; j < skeleton.length; j++) {
+      line(
+        skeleton[j][0].position.x,
+        skeleton[j][0].position.y,
+        skeleton[j][1].position.x,
+        skeleton[j][1].position.y
+      );
     }
   }
-  pop();
 
   fill(255, 0, 255);
   noStroke();
-  textSize(50);
+  textSize(100);
   textAlign(CENTER, CENTER);
   text(poseLabel, width / 2, height / 2);
 }

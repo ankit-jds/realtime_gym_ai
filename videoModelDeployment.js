@@ -11,7 +11,7 @@ let poseLabel = "rounded_back";
 
 function preload() {
   console.log("PRELOADING....");
-  video = createVideo("./videos/testing_videos/0928_squat_000007.mp4", onVideoLoad);
+  video = createVideo("./videos/testing_videos/1029_squat_000029.mp4", onVideoLoad);
   video.hide();
   video.elt.addEventListener("loadeddata", startVideoPlayback);
 }
@@ -57,15 +57,15 @@ function setup() {
 
   let options = {
     inputs: 34,
-    outputs: 4,
+    outputs: 2,
     task: "classification",
     debug: true,
   };
   brain = ml5.neuralNetwork(options);
   const modelInfo = {
-    model: "model/model.json",
-    metadata: "model/model_meta.json",
-    weights: "model/model.weights.bin",
+    model: "model/model(2).json",
+    metadata: "model/model_meta(2).json",
+    weights: "model/model.weights(2).bin",
   };
   brain.load(modelInfo, brainLoaded);
 }
@@ -86,7 +86,7 @@ function classifyPose() {
     }
     brain.classify(inputs, gotResult);
   } else {
-    setTimeout(classifyPose, 100);
+    setTimeout(classifyPose, 1000);
   }
 }
 
@@ -153,27 +153,13 @@ function draw() {
         );
       }
     }
-    let leftAnkleX = singlePose.leftAnkle.x;
-    let leftAnkleY = singlePose.leftAnkle.y;
-    let leftHipX = singlePose.leftHip.x;
-    let leftHipY = singlePose.leftHip.y;
-    let leftKneeX = singlePose.leftKnee.x;
-    let leftKneeY = singlePose.leftKnee.y;
-
-    let angle = calcAngle(
-      leftAnkleX,
-      leftAnkleY,
-      leftKneeX,
-      leftKneeY,
-      leftHipX,
-      leftHipY
-    );
-    // console.log(angle);
-    if (angle < 124) {
-      // console.log(angle, "if");
+   
+    
+    if (poseLabel == "CORRECT") {
       stroke(0, 255, 0);
       strokeWeight(5);
     } else {
+      console.log(poseLabel);
       stroke(255, 255, 255);
       strokeWeight(5);
     }
@@ -199,25 +185,3 @@ function draw() {
   text(poseLabel, width / 2, height / 2);
 }
 
-function calcAngle(x1, y1, x2, y2, x3, y3) {
-  // Calculate the vectors between the points
-  let v1x = x1 - x2;
-  let v1y = y1 - y2;
-  let v2x = x3 - x2;
-  let v2y = y3 - y2;
-
-  // Calculate the dot product of the vectors
-  let dotProduct = v1x * v2x + v1y * v2y;
-
-  // Calculate the magnitudes of the vectors
-  let v1mag = Math.sqrt(v1x * v1x + v1y * v1y);
-  let v2mag = Math.sqrt(v2x * v2x + v2y * v2y);
-
-  // Calculate the cosine of the angle between the vectors
-  let cosAngle = dotProduct / (v1mag * v2mag);
-
-  // Convert the cosine to an angle in degrees
-  let angleDeg = (Math.acos(cosAngle) * 180) / Math.PI;
-
-  return angleDeg;
-}

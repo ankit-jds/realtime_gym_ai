@@ -7,7 +7,7 @@ let brain;
 
 function preload() {
   console.log("PRELOADING....");
-  video = createVideo("./videos/rounded_back/1003_squat_000152.mp4", onVideoLoad);
+  video = createVideo("./videos/bad_back_round/1115_video/0922_squat_000016.mp4", onVideoLoad);
   video.hide();
   video.elt.addEventListener("loadeddata", startVideoPlayback);
 }
@@ -31,13 +31,13 @@ function onVideoLoad() {
   // // Play the video
   if (video_variables["video_loaded"]) {
     console.log("VIDEO PLAYING");
-    video.play();
+    video.loop();
   } else {
     console.log("wait");
   }
 
   video.onended(function () {
-    brain.saveData();
+    // brain.saveData();
     console.log("VIDEO ENDED");
   });
 }
@@ -53,7 +53,7 @@ function setup() {
 
   let options = {
     inputs: 34,
-    outputs: 4,
+    outputs: 2,
     task: "classification",
     debug: true,
   };

@@ -10,12 +10,12 @@ function setup() {
     debug: true
   }
   brain = ml5.neuralNetwork(options);
-  brain.loadData('data/Rounded_Back_148_155_plus_two_correct.json', dataReady);
+  brain.loadData('data/main_data.json', dataReady);
 }
 
 function dataReady() {
   brain.normalizeData();
-  brain.train({epochs: 50}, finished); 
+  brain.train({epochs: 1000}, finished); 
 }
 
 function finished() {
