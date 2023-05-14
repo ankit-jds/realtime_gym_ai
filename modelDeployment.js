@@ -1,4 +1,5 @@
 let video;
+let video_variables = {};
 let posenet;
 
 let singlePose, skeleton;
@@ -6,13 +7,20 @@ let state = "collecting";
 
 let brain;
 
-let poseLabel = "rounded_back";
+let poseLabel = "INNER_THIGH";
 
 function setup() {
   console.log("SETUP STARTED");
-  createCanvas(1000, 500);
 
   video = createCapture(VIDEO);
+  console.log(video_variables, video.width, video.height, 12315);
+  video_variables["new_width"] = 640 * (500 / 480);
+  video_variables["new_height"] = 500;
+
+  createCanvas(video_variables["new_width"], video_variables["new_height"]);
+  video_variables["x_ratio"] = video_variables["new_width"] / 640;
+  video_variables["y_ratio"] = video_variables["new_height"] / 480;
+  console.log(video_variables, video.width, video.height);
   video.hide();
 
   poseNet = ml5.poseNet(video, modelLoaded);
@@ -74,38 +82,27 @@ function modelLoaded() {
 
 function draw() {
   // push();
-  // translate(video.width, 0);
-  // scale(-1, 1);
+  translate(video_variables["new_width"], 0);
+  scale(-1, 1);
   // image(video, 0, 0, video.width, video.height);
   background(255, 0, 0);
-  image(video, 0, 0);
+  image(
+    video,
+    0,
+    0,
+    video_variables["new_width"],
+    video_variables["new_height"]
+  );
 
   fill(255, 0, 0);
-
-  // if (singlePose) {
-  //   for (let i = 0; i < skeleton.length; i++) {
-  //     let a = skeleton[i][0];
-  //     let b = skeleton[i][1];
-  //     strokeWeight(2);
-  //     stroke(0);
-
-  //     line(a.position.x, a.position.y, b.position.x, b.position.y);
-  //   }
-  //   for (let i = 0; i < singlePose.keypoints.length; i++) {
-  //     let x = singlePose.keypoints[i].position.x;
-  //     let y = singlePose.keypoints[i].position.y;
-  //     fill(0);
-  //     stroke(255);
-  //     ellipse(x, y, 16, 16);
-  //   }
 
   if (singlePose) {
     // console.log(singlePose, skeleton, "pose ");
     for (let i = 0; i < singlePose.keypoints.length; i++) {
       if (singlePose.keypoints[i].score > 0.6) {
         ellipse(
-          singlePose.keypoints[i].position.x,
-          singlePose.keypoints[i].position.y,
+          singlePose.keypoints[i].position.x * video_variables["x_ratio"],
+          singlePose.keypoints[i].position.y * video_variables["y_ratio"],
           10
         );
       }
@@ -122,17 +119,20 @@ function draw() {
 
     for (let j = 0; j < skeleton.length; j++) {
       line(
-        skeleton[j][0].position.x,
-        skeleton[j][0].position.y,
-        skeleton[j][1].position.x,
-        skeleton[j][1].position.y
+        skeleton[j][0].position.x * video_variables["x_ratio"],
+        skeleton[j][0].position.y * video_variables["y_ratio"],
+        skeleton[j][1].position.x * video_variables["x_ratio"],
+        skeleton[j][1].position.y * video_variables["y_ratio"]
       );
     }
   }
 
-  fill(255, 0, 255);
+  document.getElementById("result").innerText = poseLabel;
+  // fill(255, 0, 255);
+  // translate(video_variables["new_width"], 0);
+  // scale(-1, 1);
   noStroke();
-  textSize(100);
-  textAlign(CENTER, CENTER);
-  text(poseLabel, width / 2, height / 2);
+  // textSize(100);
+  // textAlign(CENTER, CENTER);
+  // text(poseLabel, width / 2, height / 2);
 }

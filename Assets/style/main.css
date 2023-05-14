@@ -56,6 +56,12 @@ main #defaultCanvas0 {
   margin-left: 30%;
 }
 
+#result {
+  width: 50vw !important;
+  margin: 0 auto;
+  margin-left: 30%;
+}
+
 .sideBar {
   width: 17vw;
   display: flex;
