@@ -1,0 +1,152 @@
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  font-family: Poppins;
+  overflow-x: hidden;
+}
+* {
+  box-sizing: border-box;
+}
+img {
+  max-width: 100%;
+}
+.logo {
+  text-align: center;
+  max-width: 300px;
+  margin: auto;
+}
+.dflex {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.dLeft {
+  padding: 2rem;
+  background: #fff;
+  width: 450px;
+  margin: auto;
+}
+.dRight {
+  background-color: #ccc;
+  height: 100vh;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.82)
+    ),
+    url(../images/home-gym.jpg);
+  background-size: cover;
+  width: 60%;
+  float: right;
+  display: flex;
+  align-items: center;
+  padding: 40px;
+}
+.loginForm {
+  padding: 20px 0;
+}
+.loginForm .loginTitle {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #000;
+  font-weight: 500;
+  margin-bottom: 50px;
+}
+.loginForm .field-group {
+  margin-bottom: 15px;
+}
+input[type="text"],
+input[type="password"] {
+  height: 46px;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(235, 237, 242, 0.8);
+  padding: 1rem 0;
+  color: #6c7293;
+  width: 100%;
+  margin-bottom: 5px;
+  font-family: "Poppins", sans-serif;
+}
+input:focus {
+  outline: none;
+}
+.error {
+  color: #f00;
+  font-size: 12px;
+}
+.loginExtra {
+  margin-top: 26px;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 500;
+}
+a {
+  color: #6c7293;
+  text-decoration: none;
+  transition: all ease-in-out 0.5s;
+}
+a:hover {
+  color: #000;
+}
+.loginAction {
+  margin-top: 35px;
+  text-align: center;
+}
+.btn-default {
+  font-family: "Poppins", sans-serif;
+  background-color: #ff9045;
+  border: 1px solid #ff9045;
+  color: #fff;
+  height: 46px;
+  padding-left: 25px;
+  padding-right: 25px;
+  font-weight: 500;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all ease-in-out 0.5s;
+}
+.btn-default:hover {
+  background-color: #ff8f45ba 045;
+  border-color: #ff9045;
+}
+h3 {
+  color: #fff;
+  font-size: 42px;
+  margin: 0 0 15px;
+}
+.companyDesc {
+  color: #fff;
+  display: block;
+}
+.wow {
+  visibility: hidden;
+}
+
+@media only screen and (max-width: 800px) {
+  .dflex {
+    flex-direction: column;
+  }
+  .dRight {
+    width: 100%;
+    text-align: center;
+  }
+}
+@media only screen and (max-width: 479px) {
+  .dLeft {
+    width: 100%;
+    padding: 30px 15px;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  .dRight {
+    padding: 40px 15px;
+  }
+}

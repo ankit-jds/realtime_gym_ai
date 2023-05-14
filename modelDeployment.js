@@ -10,7 +10,7 @@ let poseLabel = "rounded_back";
 
 function setup() {
   console.log("SETUP STARTED");
-  createCanvas(1280, 720);
+  createCanvas(1000, 500);
 
   video = createCapture(VIDEO);
   video.hide();
@@ -112,7 +112,6 @@ function draw() {
     }
 
     if (poseLabel == "CORRECT") {
-
       stroke(0, 255, 0);
       strokeWeight(5);
     } else {
