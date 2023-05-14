@@ -127,7 +127,7 @@ function draw() {
     }
   }
 
-  document.getElementById("result").innerText = poseLabel;
+  document.getElementById("prompt").innerText = poseLabel;
   // fill(255, 0, 255);
   // translate(video_variables["new_width"], 0);
   // scale(-1, 1);
