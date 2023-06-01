@@ -7,7 +7,7 @@ let state = "collecting";
 
 let brain;
 
-let poseLabel = "INNER_THIGH";
+let poseLabel = "INCORRECT";
 
 function setup() {
   console.log("SETUP STARTED");
@@ -23,7 +23,13 @@ function setup() {
   console.log(video_variables, video.width, video.height);
   video.hide();
 
-  poseNet = ml5.poseNet(video, modelLoaded);
+  let posenet_options = {
+    architecture: "MobileNetV1",
+    // architecture: "ResNet50",
+    maxPoseDetections: 1,
+    detectionType: "single",
+  };
+  poseNet = ml5.poseNet(video, posenet_options, modelLoaded);
   poseNet.on("pose", receivedPoses);
 
   let options = {
@@ -34,9 +40,9 @@ function setup() {
   };
   brain = ml5.neuralNetwork(options);
   const modelInfo = {
-    model: "model/model.json",
-    metadata: "model/model_meta.json",
-    weights: "model/model.weights.bin",
+    model: "model/model(2).json",
+    metadata: "model/model_meta(2).json",
+    weights: "model/model.weights(2).bin",
   };
   brain.load(modelInfo, brainLoaded);
 }
@@ -64,6 +70,13 @@ function classifyPose() {
 function gotResult(error, results) {
   if (results[0].confidence > 0.75) {
     poseLabel = results[0].label.toUpperCase();
+    if (poseLabel==="C"){
+      poseLabel="CORRECT"
+    }
+    
+    if (poseLabel==="I"){
+      poseLabel="INCORRECT"
+    }
     // console.log(results[0].confidence, results[0].label);
   }
   classifyPose();
@@ -94,7 +107,7 @@ function draw() {
     video_variables["new_height"]
   );
 
-  fill(255, 0, 0);
+  fill(0, 0, 255);
 
   if (singlePose) {
     // console.log(singlePose, skeleton, "pose ");
@@ -113,7 +126,7 @@ function draw() {
       strokeWeight(5);
     } else {
       // console.log(poseLabel);
-      stroke(255, 255, 255);
+      stroke(255, 0, 0);
       strokeWeight(5);
     }
 
